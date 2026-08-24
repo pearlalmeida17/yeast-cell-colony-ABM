@@ -1,0 +1,65 @@
+> CELL INTERACTION AND SPATIAL ARRANGEMENT:-
+    We assume the resting shape of individual yeast cells is circular, and track the size and location of 
+    cell i at time t by its radius Ri(t) and centerxi(t) = (xi(t),yi(t)).
+
+    We track the total number of cells at time t, N(t), and index cells by their birth order i 1, 2, . . . ,
+     N(t) . Since all cells are of the sametype, themassofeachcell, mi(t), 
+     is proportional to the area of each cell with the same constant.
+
+     Werepresent the combination of repulsive and attractive interactions between cells using a modified
+      Hertz-model, where the potential E^cc ij (t) between two cells i and j is given by:
+
+      QUESTIONS: 
+      1. What temp for the Ws value 25 Kb T? 310K is okay?
+      2. are all cells the same size?
+      3. use gradient of potential Eij^cc to calculate force?
+            fij = - gradient of Eij^cc
+      4. would want the yeast cells to repel even when apart right? to make them displace due to that potential?
+      
+
+
+
+meeting 2:-
+parallelizing calculation (think abt it)
+complete the new position code for a single cell
+iterate over the 3 cells
+
+
+1. waiting for the updated or correct formula for Eij_cc_adh: currently it is phi* ws*Aij(t)
+                                                                              Aij = (Ri+Rj)*0.5
+                                                      
+
+WEEK 3 Q:
+1. for Gradient of Emd ...what is it getting differentiated wrt dmb is a part of it with c_m and c_d. it's getting dff wrt what
+/// 2. how to diff' something wrt to a quantity w co-ordinates 
+3. if there is no mother - daughter interaction like in non - budding, what would emd (i.e. gradient of spring potential be?)
+
+
+1. corrct the derrivate for the E_ij_cc (that repulsion and adhesion )wrt dci (get the derrivate wrt to cell ci)
+2. move on to looping
+
+
+
+::::
+cell 1 force
+      calculate fij for cell 1 n 2 ...store that
+            loop for cell 1 and 3 :__________> {fixate 1, loop w others untill all done; fixate 2, loop w rest untill all done..carry on w it }
+      calculate fik for cell 1 n 3 ...store that
+
+      then add fij and fik
+      
+QUESTIONS: 
+      1. derivative of dij: how will the derivative part lead to a vector? ...after multiplying it with the unit vector? cuz i need tuples to be add or formated in any sense
+      2. simplification of the position formula
+      3. viscous drag force formula: why is xi(t) ie. cell center multiplied and can it not be considered
+      4. whenever cell center xi(t) is multiplied a vector is to be consideredb
+
+QUESTIONS:
+      1. In the integrator.py file or when calculating the postion change; to begin with should it be calculated over 1 time interval and then stored and then calculated over the 2nd dt and then stored and then summed together? How are we to work our way around it
+      2. and if we are to sum it there and then and keep adding the constant postion change happening during those small dt, is it to be like the updated postion now becomes xi(t) for the next interaction? Some clarity on how the iteration would work based on the tijme difference like dt (fixed minute time like 0.000...!) or there's this fixed toime like 100 mins and where does the cell go in that duration in space?
+
+
+      keep track of location (position) every 5 mins , but for now caliberate for 10 iteration i.e. 10 dt's 
+
+QUESTIONS:
+     1. when I am updating the positions for c1, c2, c3; so for t = 1; I update C1 and then I move to c2 updation am I gonna use C1 initial value from t = 0; or am I going to use the updated value 

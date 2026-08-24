@@ -1,0 +1,262 @@
+FORCES.PY CODE:- 
+
+from dataclasses import dataclass
+from config import PhysicalConstants, ModelParams, cellcycle, simulparams, initstate
+from typing import Final
+import math 
+#from main import bookofpositions
+
+
+#cell interaction potential between two cell i and j is given as:-
+# Eij_cc = (((Ri + Rj - dij)^(5/2))/5Eij_tilde )* ((Ri*Rj)/(Ri + Rj))^(1/2)  + Eij_adh
+
+binding_interaction = False #True if considering binding interaction between mother and daughter cell; False otherwise
+i_is_bud = True #True if cell i is the bud (daughter cell); False if cell i is the mother cell with an attached bud
+
+"""
+ci = initstate.cell_centers[0]
+Ri = initstate.cell_radii[0]
+
+cj = initstate.cell_centers[1]
+Rj = initstate.cell_radii[1]
+"""
+Eij_tilde: Final = (3/2)*((1- ModelParams.sigma**2)/ModelParams.E) #effective modulus of elasticity
+
+
+@dataclass
+class cell_pairs:
+
+    "Calculate the distance vector between two points ci and cj."
+    @property
+    def rij(self):
+        rij =  tuple(a-b for a, b in zip(self.ci, self.cj)) #returns a tuple representing the distance vector : vector value
+        return rij
+    "calculate the magnitude of the distance vector"
+    
+    def dij(self, ci, cj):
+        dij = math.sqrt(sum((a - b) ** 2 for a, b in zip(self.ci, self.cj))) #returns the magnitude of the distance vector : scalar value
+        return dij
+    "calculate the unit vector along the distance vector"
+    @property
+    def nij(self, dij = None , rij= None):  
+        if dij is None:
+            dij = self.dij  
+        if rij is None:
+            rij = self.rij
+        nij = tuple (a/dij for a in rij if dij !=0) #unit vector along the distance vector
+        return nij
+
+#pair = cell_pairs(ci, cj)
+#dij = pair.dij
+
+"""
+"""
+def dist_ci_cj (ci, cj):
+
+    
+    "Calculate the distance vector between two points ci and cj."
+    rij =  tuple(a-b for a, b in zip(ci, cj)) #returns a tuple representing the distance vector : vector value
+    
+    "calculate the magnitude of the distance vector"
+    dij = math.sqrt(sum((a - b) ** 2 for a, b in zip(ci, cj))) #returns the magnitude of the distance vector : scalar value
+
+    "calculate the unit vector along the distance vector"
+    nij = tuple (a/dij for a in rij if dij !=0) #unit vector along the distance vector
+
+    return dij, rij, nij
+
+@dataclass
+class repulsion_adhesion:
+    "Calculate the interaction potential and forces between two cells i and j."
+
+    def derivative_dij(ci, cj):
+        #dij = ||ci-cj||
+        # modulus of the distance vector between two cells i and j is given as: dij = sqrt((xi-xj)^2 + (yi-yj)^2 + (zi-zj)^2)
+        # derivating dij squared part
+        ddij_deno = math.sqrt(sum((a - b) ** 2 for a, b in zip(ci, cj))) #dij
+        dij_deriv  = tuple((a - b)/ddij_deno for a, b in zip(ci, cj)) if ddij_deno !=0 else (0.0, 0.0) #derivative of dij wrt ci or cj; returns a tuple
+        return dij_deriv
+    
+    def grad_Eij_cc(ci, cj, Ri, Rj):
+        #Ignoring adhesion force Eij_adh for now: But need to add it. 
+        # [waiting for the corect formula; specifically for dij component or something that includes ci position]
+        #cuz we want the adh force to be dependent on the diastance between the cells.
+        "Calculate the gradient of the repulsive energy between two cells i and j."
+
+        dij = cell_pairs.dij(ci, cj)
+
+        delta_ij = max(0, Ri + Rj - dij) #overlap distance between the two cells
+        if dij < (Ri + Rj):
+            #magnitude of the gradient
+            scalar_grad_Eij_cc = - (delta_ij **(3/2))/ (2*Eij_tilde) * ((Ri * Rj)/(Ri + Rj))**(1/2)
+            #vector form of the gradient 
+
+            t1 = tuple(scalar_grad_Eij_cc * a for a in repulsion_adhesion.derivative_dij(ci, cj))
+            t2 = tuple(-ModelParams.phi * ModelParams.Ws * 0.5 * (initstate.R1 + initstate.R2) * a for a in repulsion_adhesion.derivative_dij(ci, cj)   )
+            grad_Eij_cc = tuple(a + b for a, b in zip(t1, t2))
+            
+            #grad_Eij_cc = (tuple(scalar_grad_Eij_cc*(a - b)/dij for a, b in zip(c1, c2)))# + gradient of adhesion energy (to be added)
+            return grad_Eij_cc
+        """
+        else: #when there is no overlap between the cells i.e. dij< Ri + Rj
+            grad_Eij_cc = (0.0, 0.0)
+        return grad_Eij_cc
+    """
+
+
+"""
+
+#Interaction force vector between two cells i and j 
+# (i.e. unit vector or directional vector, 
+# nij is the direction of force acting between cell i and j; especially on cell i)
+
+
+# Total force on cell i due to cell j and k
+  
+
+class mother_daughter:
+    
+    # Adhesive interaction potential between mother and daughter cell (binding part of things)
+    def linear_spring_potential(c_m, c_d,R_m, R_d, Kbud= ModelParams.Kbud):
+        "the adhesive interaction caused by attachment of the new daughter cell to its mother"
+        if binding_interaction == False :
+            E_md = 0.0
+        else:
+            d_md = cell_pairs.dij(c_m, c_d) #distance between the centers of mother and daughter cell
+
+            E_md = Kbud *(d_md - (R_m + R_d))**2 if d_md > (R_m + R_d) else 0 #linear spring potential energy
+        
+        return E_md
+
+    def grad_Emd(c_m, c_d, R_m, R_d, Kbud= ModelParams.Kbud):
+        return None #return Fmd ....scalar value
+
+    
+    
+    # vector of Emd gradient
+    # emd = tuple(m_md * a for a in n_md) #vector of Emd gradient
+    
+    "Calculate the force due to the mother-daughter cell interaction -----> in integrator.py"
+    def Fmd():
+        return None #return Fmd vector
+    
+    def viscous_drag_force():
+        if binding_interaction == False:
+            vdrag = tuple(Fi(fij)) 
+            " vdrag yet to multiply with a -ve sign"
+
+        elif binding_interaction == True:
+            if i_is_bud == True: #cell i is the bud (daughter cell)
+                vdrag = tuple (-(a - b) for a, b in zip(Fi, mother_daughter.Fmd)) #total force on the daughter cell #Fmd from grad_Emd
+            
+            else: #cell i is the mother cell with an attached bud
+                vdrag = tuple (-(a + b) for a, b in zip(Fi, mother_daughter.Fmd)) #total force on the mother cell #Fmd from grad_Emd
+        return vdrag
+"""
+
+
+
+INTEGRATOR.PY:
+
+from forces import repulsion_adhesion, cell_pairs
+from config import  initstate, ModelParams
+from dataclasses import dataclass
+from config import PhysicalConstants, ModelParams, cellcycle, simulparams, initstate
+import math
+import numpy as np
+from main import bookofpositions
+
+binding_interaction = False #True if considering binding interaction between mother and daughter cell; False otherwise
+i_is_bud = True #True if cell i is the bud (daughter cell); False if cell i is the mother cell with an attached bud
+
+
+
+@dataclass
+class Fi:
+    
+    def Forces_on_cell(i):
+        #there would be a loop here to calculate the total force on cell i due to all other cells j, k, l, m, n....
+        #calculating only Eijcc for now and ignoring Eijmb
+        if i == 0:
+            #a list to store forces on each cell due to cell-cell interactions
+            forces_cc = [(0.0, 0.0) for _ in range(len(initstate.cell_centers))] #initialize force list for all cells
+        
+
+        centers = initstate.cell_centers
+        radii = initstate.cell_radii
+
+        ci = centers[i]
+        Ri = radii[i]        
+        Fx, Fy  = 0.0, 0.0
+        
+        for j, (cj, Rj) in enumerate(zip(centers, radii)):
+            if j == i:
+                continue
+        
+        fx, fy = repulsion_adhesion.grad_Eij_cc(ci, cj, Ri, Rj)
+
+        Fx += fx
+        Fy += fy
+
+        forces_cc[i] = (Fx, Fy)
+
+        return (Fx, Fy)#return total force on cell i     
+    
+    def emd():
+        
+        if binding_interaction == False:
+            def emd_zero():
+                emd = tuple (0.0, 0.0)
+                return emd_zero
+        else:
+            def emd_present():
+                pass
+        
+
+@dataclass
+class new_position:
+    
+    def new_pos_2term(i):
+
+        term2add =  tuple (a + b for a, b in zip(Fi.Forces_on_cell(i), Fi.emd()))
+        term2mult = simulparams.dt/ (ModelParams.eta (1 + initstate.cell_radii[i]/ 2))
+        sec_term = tuple (a* term2mult for a in term2add)    
+        return sec_term 
+    
+    def new_pos(i):
+        new_pos = tuple (a - b for a, b in zip(bookofpositions.positions[i][i-1], new_position.new_pos_2term(i)))
+        return new_pos    
+
+
+MAIN.PY:-
+#from forces import repulsion_adhesion
+from config import initstate,simulparams #ModelParams, 
+import numpy as np
+from dataclasses import dataclass
+from integrator import new_position #Fi, 
+
+
+@dataclass
+class bookofpositions:
+    "Class to store and update the positions of cells over time."
+
+    num_cells: int = len(initstate.cell_centers)
+    timesteps: int = int(simulparams.total_time/simulparams.dt) #total_time is defined for 10 time intervals to run.
+
+    positions = {i: np.full(len(bookofpositions.timesteps), np.nan) for i in range(num_cells)}
+    
+    # Initialize positions at time t=0
+
+    for i in range(num_cells):
+            positions[i][0] = initstate.cell_centers[i]
+    
+    #update positions starting from time interval t=1 to t=timesteps-1
+    for t in range(1, timesteps):
+        for i in range(num_cells):
+            positions[i][t] = new_position.new_pos(i)
+    
+print (bookofpositions.positions)
+
+# dictionary filled; next step is to put all the dictionary data into a json file; 
+# and then read the json file data for scattered matplotlib stimulation visualization.
+

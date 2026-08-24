@@ -1,0 +1,16 @@
+config: the constants, cell configuration and data. and other prereq data
+forces: pairwise force Fij (hertz repultion and adhesion pull)
+integrator: position calculation
+stimulator: compulte all pair forces and sum per cell
+viz: position, radii, [matplotlib]: vizualization stuff
+notes: all notes, questions, brainstorming
+init: matplotlib and  numpy stuff
+
+
+
+what I need next:-
+loops:- 
+    1. loop to calculate fij ...force between cell i and j to start w and then i and k and then various pair
+    2. loop to find total force actting on cell i and then cell j and cell k ... and so on
+    3. then loop for mother- daughter thing....fio w the viscous drag
+    4. get the position change for iteration 1 i.e. dt = 1....do it for multiple dt's
