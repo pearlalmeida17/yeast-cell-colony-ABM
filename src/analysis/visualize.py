@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from config import simulparams
-
-from main import run_simulation
+from config.base_config import simulparams
+from simulation.engine import run_simulation
 
 
 def animate_simulation(save_as: str | None = None):

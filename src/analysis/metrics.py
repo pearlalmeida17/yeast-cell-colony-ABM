@@ -1,5 +1,5 @@
 import math
-from forces import distance_and_direction
+from core.mechanics import distance_and_direction
 import networkx as nx
 from scipy.spatial import Delaunay
 

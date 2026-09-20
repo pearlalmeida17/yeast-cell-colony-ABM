@@ -35,8 +35,9 @@ class cellcycle:
 @dataclass (frozen = True)
 class simulparams:
     #simulation parameters
-    total_time: float = 0.0144 #total simulation time in mins for now to begin with 10 time steps
+    total_time: float = 1440 #total simulation time in mins for now to begin with 10 time steps
     dt: float = 0.00144 #time step in mins
+    R_avg: float = 2.58
     r : float = 0.003 #Rate of Maximum Cell Cycle Adjustment, Controls the amount cell cycle is adjusted at each time step
 
 @dataclass
@@ -63,4 +64,9 @@ class initstate:
     Mjmax: float = 18*math.pi* Ravg**2 #max possible biomass for each subdomain
     di_t: float = 25 #subdomain size, area of each subdomain in microns^2
 
+#Nutrient condition
+NUTRIENT_LIMITED = True
+
+#Budding condition
+BUDDING = True
         

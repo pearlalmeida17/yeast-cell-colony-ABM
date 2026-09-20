@@ -1,7 +1,6 @@
 from typing import Tuple
+from config.base_config import ModelParams
 import math
-
-from config import ModelParams
 
 # A 2D vector type for readability
 Vector = Tuple[float, float]
