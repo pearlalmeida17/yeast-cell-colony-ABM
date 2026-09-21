@@ -1,6 +1,6 @@
 import math
 from collections import defaultdict
-from config.base_config import initstate,simulparams
+from src.config.base_config import initstate,simulparams
 
 def get_subdomain_index(pos):
     i = int(math.floor(pos[0] / initstate.di_t))

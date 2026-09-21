@@ -1,5 +1,5 @@
 import numpy as np
-from config.base_config import cellcycle
+from src.config.base_config import cellcycle
 
 
 def init_cycle(cell):
@@ -23,9 +23,9 @@ def update_CP(cell, dt):
         cell.CP += cell.CI * dt
 
 def grow_radius(cell, dt):
-    if cell.in_G1() and cell.R < cell.R_max:
+    if in_G1(cell) and cell.R < cell.R_max:
         growth_rate = cell.R_max/ cell.G1
-        cell.R = min(cell.R + cell.grow_radius*dt , cell.R_max)
+        cell.R = min(cell.R + growth_rate*dt , cell.R_max)
 
 
 

@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-class lineage:
+class Lineage:
     def __init__(self):
         self.edges = defaultdict(list)
         self.next_subcolony_id = 0
@@ -17,3 +17,5 @@ class lineage:
         
     def add_edge(self, mother_id, daughter_id):
         self.edges[mother_id].append(daughter_id)
+
+lineage = Lineage()

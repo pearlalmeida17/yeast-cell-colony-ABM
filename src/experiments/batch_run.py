@@ -1,5 +1,5 @@
-from ..simulation.engine import run
-from config.base_config import initstate
+from src.simulation.engine import run
+from src.config.base_config import initstate
 
 def batch_run(n_runs=5, budding=True, nutrient=True):
     initstate.BUDDING = budding
@@ -7,7 +7,7 @@ def batch_run(n_runs=5, budding=True, nutrient=True):
 
     results = []
     for k in range(n_runs):
-        cells, lineage = run()
-        results.append((cells, lineage))
+        cells, Lineage = run()
+        results.append((cells, Lineage))
         print(f"Run {k+1}: N = {len(cells)}")
     return results

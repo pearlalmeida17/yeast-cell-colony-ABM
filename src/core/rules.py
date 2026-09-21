@@ -1,5 +1,5 @@
-from cycle import update_CP, grow_radius
-from budding import maybe_start_bud, update_bud, handle_non_budding_divison
+from src.core.cycle import grow_radius
+from src.core.budding import maybe_start_bud, update_bud, handle_non_budding_divison
 
 def apply_cell_rules(cell, dt, new_cells):
     update_bud(cell, dt)

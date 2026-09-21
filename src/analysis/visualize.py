@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from config.base_config import simulparams
+from src.config.base_config import simulparams
 from simulation.engine import run_simulation
 
 

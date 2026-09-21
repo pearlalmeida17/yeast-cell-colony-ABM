@@ -1,10 +1,9 @@
-from core.colony import Colony
-from config.base_config import simulparams
+from src.config.base_config import simulparams
 
-from ..core.simulation import run_simulation
+from src.core.simulation import run_simulation
 
 def run():
-    cells, lineage = run_simulation()
+    cells, lineage= run_simulation()
     # hook into analysis/visualization if you want
     return cells, lineage
 

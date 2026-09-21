@@ -65,8 +65,8 @@ class initstate:
     di_t: float = 25 #subdomain size, area of each subdomain in microns^2
 
 #Nutrient condition
-NUTRIENT_LIMITED = True
+    NUTRIENT_LIMITED = True
 
 #Budding condition
-BUDDING = True
+    BUDDING = True
         

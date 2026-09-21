@@ -1,4 +1,4 @@
-from ..simulation.engine import run
+from src.simulation.engine import run
 
 if __name__ == "__main__":
     cells, lineage = run()

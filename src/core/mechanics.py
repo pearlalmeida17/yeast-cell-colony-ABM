@@ -1,5 +1,5 @@
-from config.base_config import ModelParams
-from forces import repulsive_force, mother_bud_spring_force
+from src.config.base_config import ModelParams
+from src.core.forces import repulsive_force, mother_bud_spring_force
 import numpy as np
 
 
@@ -31,8 +31,8 @@ def compute_forces_with_subdomains(cells, subdomains, dt):
                     continue
 
                 repulsive_force_on_ci = repulsive_force(np.squeeze(ci.pos), np.squeeze(cj.pos), ci.R, cj.R )
-                if cell.has_bud or cell.bud is not None:
-                    mother_bud_force = mother_bud_spring_force(np.squeeze(ci.pos), np.squeeze(cell.bud["pos"]), ci.R, ci.bud["R"] )
+                if ci.has_bud or ci.bud is not None:
+                    mother_bud_force = mother_bud_spring_force(np.squeeze(ci.pos), np.squeeze(ci.bud["pos"]), ci.R, ci.bud["R"] )
                 else:
                     mother_bud_force = 0
 
@@ -50,7 +50,7 @@ def compute_forces_with_subdomains(cells, subdomains, dt):
 
         fx, fy = forces[cell.id]
         x, y = cell.pos
-        coeff = (dt/(ModelParams.eta)(1 + cell.R/2))
+        coeff = (dt/ModelParams.eta * (1 + cell.R/2))
 
         cell.pos = (x - fx * coeff, y - fy * coeff) 
         

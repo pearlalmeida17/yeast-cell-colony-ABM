@@ -1,5 +1,5 @@
 from typing import Tuple
-from config.base_config import ModelParams
+from src.config.base_config import ModelParams
 import math
 
 # A 2D vector type for readability

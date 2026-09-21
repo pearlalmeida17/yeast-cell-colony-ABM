@@ -1,11 +1,11 @@
 import numpy as np
-from config.base_config import initstate, simulparams
-from .colony import init_founder_mother
-from .environment import build_subdomains, compute_biomass, update_GRadjust, apply_nutrient_limitation
-from .mechanics import compute_forces_with_subdomains
-from .rules import apply_cell_rules
-from .lineage import lineage
-from .cycle import update_CP
+from src.config.base_config import initstate, simulparams
+from src.core.colony import init_founder_mother
+from src.core.environment import build_subdomains, compute_biomass, update_GRadjust, apply_nutrient_limitation
+from src.core.mechanics import compute_forces_with_subdomains
+from src.core.rules import apply_cell_rules
+from src.core.lineage import Lineage
+from src.core.cycle import update_CP
 
 def run_simulation():
     cells = []
@@ -33,11 +33,13 @@ def run_simulation():
             update_CP(cell, simulparams.dt)
             apply_cell_rules(cell, simulparams.dt, new_cells)
 
+        my_lineage = Lineage()
+
         # assign IDs and lineage
         for daughter in new_cells:
             daughter.id = next_id
             next_id += 1
-            lineage.add_edge(daughter.parent_id, daughter.id)
+            my_lineage.add_edge(daughter.parent_id, daughter.id)
 
         cells.extend(new_cells)
 
@@ -48,4 +50,4 @@ def run_simulation():
 
         # optional: logging, snapshots, metrics
 
-    return cells, lineage
+    return cells, Lineage

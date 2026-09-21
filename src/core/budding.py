@@ -1,8 +1,8 @@
 import random, math
-from cycle import init_cycle
-from core.cell import Cell
-from config.base_config import initstate
-from lineage import lineage
+from src.core.cycle import init_cycle, in_G1
+from src.core.cell import Cell
+from src.config.base_config import initstate
+from src.core.lineage import Lineage
 import numpy as np
 
 
@@ -20,7 +20,7 @@ def choose_bud_site_angle(cell):
         
         
     if angle in cell.bud_scars:
-        choose_bud_site_angle(cell)
+        return choose_bud_site_angle(cell)
     else:
         #set the angle to the cell until the bud is attached to it 
         cell.bud_site_angle = angle
@@ -32,7 +32,7 @@ def choose_bud_site_angle(cell):
 def maybe_start_bud(cell):
     if not initstate.BUDDING:
         return
-    if cell.in_G2() and not cell.has_bud:
+    if not in_G1(cell) and not cell.has_bud:
         cell.has_bud = True
         cell.bud_age = 0.0
 
@@ -42,7 +42,7 @@ def maybe_start_bud(cell):
         cell.bud = {
             "R" : 0.0,
             "angle" : cell.bud_site_angle,
-            "pos": cell.pos.copy()
+            "pos": tuple(cell.pos),
 
         }
 
@@ -52,10 +52,6 @@ def create_daughter_from_bud(cell):
         id = None,
         is_mother = False,
         pos = cell.bud["pos"],
-        R_avg = initstate.Ravg,
-        G1_avg_mother=cell.G1,
-        G1_avg_daughter=cell.G1,
-        G2_avg=cell.G2,
         parent_id=cell.id,
         founder_id=cell.founder_id if cell.founder_id is not None else cell.id,
         colony_id=cell.colony_id,
@@ -63,7 +59,11 @@ def create_daughter_from_bud(cell):
     )
     
     init_cycle(daughter)
-    lineage.update_ids(daughter)
+    if daughter.cycle_time > 0:
+        daughter.CI = 1.0 / daughter.cycle_time
+
+    lineage_ins = Lineage()
+    lineage_ins.update_ids(daughter)
 
     #what happens to cell.bud_site_angle after creation of daughter cell
     cell.bud_site_angle = None
@@ -114,8 +114,10 @@ def handle_non_budding_divison(cell):
         )
     
         init_cycle(daughter)
-        lineage.update_ids(daughter)
-
+        if daughter.cycle_time > 0:
+            daughter.CI = 1.0 / daughter.cycle_time
+        lineage_ins = Lineage()
+        lineage_ins.update_ids(daughter)
         cell.CP = 0.0
         return daughter
     return None
