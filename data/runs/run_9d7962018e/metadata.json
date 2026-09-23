@@ -1,9 +1,0 @@
-{
-  "run_id": "run_9d7962018e",
-  "seed": 1,
-  "total_time": 300,
-  "dt": 0.00144,
-  "budding": true,
-  "nutrient_limited": false,
-  "initial_cells_path": "data\\inputs\\initial_cells.parquet"
-}
