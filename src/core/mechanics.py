@@ -31,10 +31,10 @@ def compute_forces_with_subdomains(cells, subdomains, dt):
                     continue
 
                 repulsive_force_on_ci = repulsive_force(np.squeeze(ci.pos), np.squeeze(cj.pos), ci.R, cj.R )
-                if ci.has_bud or ci.bud is not None:
+                if ci.has_bud and ci.bud is not None:
                     mother_bud_force = mother_bud_spring_force(np.squeeze(ci.pos), np.squeeze(ci.bud["pos"]), ci.R, ci.bud["R"] )
                 else:
-                    mother_bud_force = 0
+                    mother_bud_force = (0.0, 0.0)
 
                 total_force = (repulsive_force_on_ci[0] + mother_bud_force[0], repulsive_force_on_ci[1] + mother_bud_force[1])
 

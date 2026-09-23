@@ -7,7 +7,7 @@ Vectors = tuple [float, float]
 @dataclass
 class Cell:
     #___must be provided___
-    def __init__(self, id, is_mother, pos, parent_id=None, founder_id =None, colony_id=0, subcolony_id=None, bud_site_angle=None, bud_scars=None):
+    def __init__(self, id, is_mother, pos, parent_id=None, founder_id =None, colony_id=0, subcolony_id=None, bud_site_angle=None, bud_scars=None, birth_time = 0.0):
         
         self.id =  id # type: ignore
         self.parent_id = parent_id
@@ -50,6 +50,9 @@ class Cell:
         self.bud_age = 0.0
 
         self.subdomain_idx : tuple[int, int] | None = None
+
+        self.birth_time = float(birth_time)
+        self.birth_pos = self.pos.copy()
 
 
     

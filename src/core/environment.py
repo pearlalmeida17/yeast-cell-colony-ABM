@@ -9,8 +9,10 @@ def get_subdomain_index(pos):
 
 def build_subdomains(cells):
     subdomains = defaultdict(list)
+
     for cell in cells:
         idx = get_subdomain_index(cell.pos)
+        cell.subdomain_idx = idx
         subdomains[idx].append(cell)
     return subdomains
 
@@ -27,7 +29,7 @@ def compute_biomass(subdomains):
 def update_GRadjust(GRadjust, biomass, dt):
     new = {}
     for idx, Mj in biomass.items():
-        Mj_div = 1 if Mj > 1 else (Mj / initstate.Mjmax)
+        Mj_div =  min(Mj / initstate.Mjmax, 1.0)
         prev = GRadjust.get(idx, 1.0)
         updated = prev - simulparams.r * Mj_div * dt
         new[idx] = max(updated, 0.0)

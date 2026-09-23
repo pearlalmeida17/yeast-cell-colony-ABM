@@ -9,12 +9,12 @@ def init_cycle(cell):
         cell.G1 = (1 + np.random.uniform(-0.1, 0.1)) * cellcycle.G1avgdaughter
 
 
-    
-    cell.G2 = (1 + np.random.uniform(-0.1, 0.1)) * cellcycle.G2avg
+    if cell.G2 == 0:
+        cell.G2 = (1 + np.random.uniform(-0.1, 0.1)) * cellcycle.G2avg
     cell.cycle_time = cell.G1 + cell.G2
     cell.CI_original = 1.0 / cell.cycle_time
     cell.CI = cell.CI_original
-    cell.R = 0.0 if not cell.is_mother else cell.R_max
+   
 
 def in_G1(cell):
         return cell.CP * cell.cycle_time < cell.G1

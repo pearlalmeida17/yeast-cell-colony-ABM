@@ -2,6 +2,7 @@ from src.core.cell import Cell
 import numpy as np
 from src.core.cell import Cell
 from src.core.cycle import init_cycle
+from src.config.base_config import initstate
 
 
 def init_founder_mother():
@@ -19,6 +20,7 @@ def init_founder_mother():
 
 
     init_cycle(mother)
+    mother.R = mother.R_max
     if mother.cycle_time > 0:
         mother.CI = 1.0 / mother.cycle_time
     mother.R = mother.R_max
